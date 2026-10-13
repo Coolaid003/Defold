@@ -43,10 +43,10 @@
   (fn/memoize
     {:limit 8}
     (fn embedded-image-resource-type [resource-type]
-      (assoc resource-type
-        :node-type EmbeddedImageNode
-        :load-fn load-embedded-image
-        :dependencies-fn embedded-image-dependencies))))
+      (cond-> (assoc resource-type :dependencies-fn embedded-image-dependencies)
+        (not= "ktx2" (:ext resource-type))
+        (assoc :node-type EmbeddedImageNode
+               :load-fn load-embedded-image)))))
 
 ;; An image whose encoded bytes occupy a range in a GLB or external glTF buffer.
 ;; All fields are non-nil except backing-resource.
@@ -116,6 +116,9 @@
   (->connection [this] (io/input-stream this)))
 
 (core/register-record-type! EmbeddedImageResource)
+
+(defmethod resource/snapshot-dependencies EmbeddedImageResource [resource]
+  [(:buffer-proj-path resource)])
 
 (defn asset-info
   "Returns glTF metadata attached to an embedded resource, or nil."

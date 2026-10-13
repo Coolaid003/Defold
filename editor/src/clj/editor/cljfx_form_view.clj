@@ -1578,6 +1578,7 @@
                      (:panel-form field))))})]
 
     {:fx/type fx.v-box/lifecycle
+     :disable (boolean (:disable field))
      :spacing line-spacing
      :children (if selected-item-fields
                  [item-list selected-item-fields]
